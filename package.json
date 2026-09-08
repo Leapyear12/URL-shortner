@@ -1,0 +1,18 @@
+{
+  "name": "url-shortner",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "Vinarmn Singh",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "mongoose": "^9.9.5",
+    "nanoid": "^6.0.1",
+    "shortid": "^2.2.17"
+  }
+}
