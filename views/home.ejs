@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>URL Shortener</title>
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --success-bg: #ecfdf5;
+      --success-text: #065f46;
+      --success-border: #a7f3d0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      padding: 40px 16px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 860px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    header p {
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      margin-bottom: 24px;
+    }
+
+    /* Form Styles */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .form-group label {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .input-wrapper {
+      display: flex;
+      gap: 10px;
+    }
+
+    input[type="url"] {
+      flex: 1;
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type="url"]:focus {
+      border-color: var(--primary);
+    }
+
+    button {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 24px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    button:hover {
+      background-color: var(--primary-hover);
+    }
+
+    
+    .alert-success {
+      background-color: var(--success-bg);
+      border: 1px solid var(--success-border);
+      color: var(--success-text);
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .alert-success a {
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: underline;
+    }
+
+    .btn-copy {
+      background-color: white;
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 6px 14px;
+      font-size: 0.85rem;
+    }
+
+    .btn-copy:hover {
+      background-color: #f1f5f9;
+    }
+
+    /* Table Styles */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.95rem;
+    }
+
+    th {
+      background-color: #f1f5f9;
+      padding: 12px 16px;
+      font-weight: 600;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      word-break: break-all;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background-color: #f8fafc;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      background: #e0e7ff;
+      color: var(--primary);
+    }
+
+    .empty-state {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 30px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>URL Shortener</h1>
+      <p>Enter a long URL to generate a shortened link and track clicks.</p>
+    </header>
+
+    <% if (locals.id) { %>
+      <div class="alert-success">
+        <div>
+          🎉 <strong>Short URL Generated:</strong>
+          <a id="shortUrlLink" href="/url/<%= id %>" target="_blank">
+            http://localhost:8001/url/<%= id %>
+          </a>
+        </div>
+        <button type="button" class="btn-copy" onclick="copyToClipboard()">Copy</button>
+      </div>
+    <% } %>
+
+    <div class="card">
+      <form method="POST" action="/url" class="form-group">
+        <label for="urlInput">Original URL</label>
+        <div class="input-wrapper">
+          <input 
+            type="url" 
+            id="urlInput" 
+            name="url" 
+            placeholder="https://example.com/very-long-url-here" 
+            required 
+          />
+          <button type="submit">Shorten</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card" style="padding: 0; overflow-x: auto;">
+      <% if (locals.urls && urls.length > 0) { %>
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Short ID</th>
+              <th>Original Link</th>
+              <th>Total Clicks</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% urls.forEach((urlItem, index) => { %>
+              <tr>
+                <td><%= index + 1 %></td>
+                <td>
+                  <a href="/url/<%= urlItem.shortId %>" target="_blank" style="color: var(--primary); text-decoration: none; font-weight: 600;">
+                    <%= urlItem.shortId %>
+                  </a>
+                </td>
+                <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                  <a href="<%= urlItem.redirectUrl %>" target="_blank" style="color: inherit; text-decoration: none;">
+                    <%= urlItem.redirectUrl %>
+                  </a>
+                </td>
+                <td>
+                  <span class="badge"><%= urlItem.visitHistory.length %></span>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } else { %>
+        <div class="empty-state">
+          <p>No URLs created yet. Shorten your first link above!</p>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+  <script>
+    function copyToClipboard() {
+      const link = document.getElementById('shortUrlLink').href;
+      navigator.clipboard.writeText(link).then(() => {
+        const btn = document.querySelector('.btn-copy');
+        btn.textContent = 'Copied!';
+        setTimeout(() => (btn.textContent = 'Copy'), 2000);
+      });
+    }
+  </script>
+</body>
+</html>
